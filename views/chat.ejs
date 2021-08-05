@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat w/Nico - kokoa Clone</title>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+	<script>
+	$(function () {
+		var dt = new Date();
+		var arrDayStr = ['일','월','화','수','목','금','토'];
+		var dateStr = dt.getFullYear() + '. ' + (dt.getMonth()+1)+'. '+dt.getDate()+'. '+arrDayStr[dt.getDay()];
+		$('#today').text(dateStr);
+		
+		var cookieArray = document.cookie.split('=');
+
+		var user_id = cookieArray[1];
+		var socket = io();
+		var room_name = '<%=room_name%>';
+		var user_img = '<%=user[0].user_img%>';
+		<!-- alert(user_img); -->
+		var aJson = {"user_id" : user_id, "room_name" : room_name};
+
+		var send = JSON.stringify(aJson);
+		socket.emit('join', send);
+		
+		socket.on('new_join', function(member_list){
+			<!-- console.log(Array.isArray(member_list)); -->
+			$('#members').html('<option value="all">=== 전체 ===</option>');
+			member_list.forEach(function(member){
+				console.log(member);
+				var arr = member.split('==');
+				if(arr[0] != user_id){
+					$('#members').append($('<option value="' + arr[1] + '">' + arr[0] + '</option>'));
+				}
+			});
+		});
+		
+		$('form').submit(function(e){
+			var content = $('#m').val();
+			var receiver_socket = $('#members option:selected').val();
+			var receiver_id = $('#members option:selected').text();
+			<!-- alert(receiver_id); -->
+			<!-- alert(receiver_socket); -->
+			<!-- alert('보낸 사람: ' + user_id + ' 내용: ' + content); -->
+			
+			var aJson = {'user_id': user_id, 'content': content, 'receiver_socket' : receiver_socket, 'receiver_id':receiver_id, 'user_img':user_img};
+			var send = JSON.stringify(aJson);
+			
+			if(receiver_socket == 'all'){
+				socket.emit('everybody', send);
+			}else{
+				socket.emit('whisper', send);
+			}
+			
+			$('#m').val('');
+			return false;
+		});
+		
+		const formatTimeAMPM = (date, midnight = { am: "오전", pm: "오후" }) => {
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var ampm = hours <= 12 ? ` ${midnight.am}` : ` ${midnight.pm}`;
+			hours = hours % 12;
+			hours = hours ? hours : 12; // the hour '0' should be '12'
+			<!-- minutes = minutes < 10 ? "0" + minutes : minutes; -->
+			<!-- hours = hours < 10 ? "0" + hours : hours; -->
+			var strTime = ampm + " " + hours + ":" + minutes + " ";
+			return strTime;
+		};
+		
+		socket.on('receive', function(msg){
+			var json_data = JSON.parse(msg);
+			console.log(json_data);
+			var send_id = json_data.user_id;
+			console.log(send_id);
+			var content = json_data.content;
+			console.log(content);
+			var user_img = json_data.user_img;
+			var html = '';
+			let now = new Date(Date.now());
+			
+			<!-- var dt = new Date(); -->
+			<!-- var dateStr = dt.getHours() + ':' + dt.getMinutes(); -->
+		
+			if(send_id != user_id){
+				html = '<div class="message-row"><img src="../images/' + user_img + '"><div class="message-row__content"><span class="message__author">' + send_id;
+				
+				if(json_data.receiver_id != undefined){
+					html += '님이 보낸 귓속말'
+				}
+				
+				html += '</span><div class="message__info"><span class="message__bubble">' + content +'</span><span class="message__time">' + formatTimeAMPM(now) + '</span></div></div></div>'
+			}else{
+				html = '<div class="message-row message-row--own"><div class="message-row__content">'
+				
+				if(json_data.receiver_id != undefined){
+					html += '<span class="message__author">'+ json_data.receiver_id +'님에게 보낸 귓속말</span>'
+				}
+				
+				html += '<div class="message__info"><span class="message__bubble">' + content + '</span><span class="message__time">' + formatTimeAMPM(now) + '</span></div></div></div>';
+			}
+			$('#messages').append($(html));
+		});
+		
+		$('#leave_button').click(function(e){
+			var check = confirm('방을 나가시겠습니까?');
+			if(check){
+				<!-- alert("나감"); -->
+				socket.emit('leave');
+				window.location.replace('rooms');
+			}else{
+				<!-- alert("안나감"); -->
+				return false;
+			}
+		});
+	});
+	</script>
+</head>
+
+
+<body id="chat-screen">
+    
+    
+    <div class="status-bar">
+        <div class="status-bar__column">
+            <Span>No Service</Span>
+            <i class="fas fa-wifi"></i>
+            <!--to do wifi Icon-->
+        </div>
+        <div class="status-bar__column">
+            <span>18:43</span>
+        </div>
+        <div class="status-bar__column">
+            <span>100%</span>
+            <i class="fas fa-battery-full fa-lg"></i>
+            <i class="fas fa-bolt"></i>
+            <!--battery icon-->
+            <!--lighting icon-->
+        </div>
+    </div>
+
+    <header class="alt-header">
+        <div class="alt-header__column" id="leave_button" ><i class="fas fa-angle-left fa-3x"></i></div>
+        <div class="alt-header__column"><h1 class="alt-header__title"><%=room_name%></h1></div>
+        <div class="alt-header__column">
+            <span><i class="fas fa-search fa-2x"></i></span>
+            <span><i class="fas fa-bars fa-2x"></i></span>
+        </div>
+    
+        
+    </header>
+
+
+    <main class="main-screen main-chat" id="messages">
+        <div class="chat__timestamp" id="today">
+        </div>
+    </main>
+
+    <form class="reply">
+        <div class="reply__column">
+            <!-- <i class="far fa-plus-square fa-lg"> -->
+			<select id="members" >
+				<option value="all">=== 전체 ===</option>
+			</select></i>
+        </div>
+        
+        <div class="reply__column">
+            <input type="text" id="m" placeholder="Write a message..."/>
+            <i id="icon-push" class="far fa-grin fa-lg"></i>
+            <button>
+            <i class="fas fa-arrow-up"></i>
+            </button>
+        </div>
+ 
+    </form>
+
+ 
+
+    <!-- <div id="no-mobile"> -->
+        <!-- <span>Your screen is too big</span> -->
+    <!-- </div> -->
+
+
+
+
+
+
+<script src="https://kit.fontawesome.com/a9eb1f10be.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+

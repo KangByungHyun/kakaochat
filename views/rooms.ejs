@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Kokoa Talk</title>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+	<script>
+		$(function () {
+			<!-- alert('<%=room_list%>'); -->
+			var cookieArray = document.cookie.split('=');
+			var user_id = cookieArray[1];
+			<!-- var socket = io({ forceNew: true }); -->
+			
+			$('#new_room').click(function(e){
+				var room_name = prompt('방 이름을 입력하세요.', '');
+				console.log(room_name + '방 생성 시도');
+				window.location.replace('room?room_name=' + room_name);
+				<!-- window.location.replace('room/' + room); -->
+			});
+			$('#logout_button').click(function(e){
+				var answer = confirm('로그아웃 하시겠습니까?', '');
+				if(answer){
+					<!-- alert("로그아웃함"); -->
+					window.location.replace('logout');
+				}else{
+					<!-- alert("로그아웃안함"); -->
+					return false;
+				}
+			});
+		});
+	</script>
+</head>
+
+<body>
+    
+    <div class="status-bar">
+        <div class="status-bar__column">
+            <Span>No Service</Span>
+            <i class="fas fa-wifi"></i>
+            <!--to do wifi Icon-->
+        </div>
+        <div class="status-bar__column">
+            <span>18:43</span>
+        </div>
+        <div class="status-bar__column">
+            <span>100%</span>
+            <i class="fas fa-battery-full fa-lg"></i>
+            <i class="fas fa-bolt"></i>
+            <!--battery icon-->
+            <!--lighting icon-->
+        </div>
+    </div>
+
+    <header class="screen-header">
+        <h1 class="screen-header__title">Chats</h1>
+        <div class="screen-hearder__icons">
+            <span><i class="fas fa-search fa-lg"></i></span>
+            <span id="new_room"><i class="far fa-comment-dots fa-lg"></i></span>
+            <span><i class="fas fa-music fa-lg"></i></span>
+            <span><i class="fas fa-cog fa-lg"></i></span>
+        </div>
+    </header>
+
+    <main class="main-screen">
+		<!-- <a href="chat.html"> -->
+		<% room_list.forEach(function(room){ %>
+			<div class="user-component" onclick="location.href='room?room_name=<%=room.room_name%>'">
+				<div class="user-component__column">
+					<img src="../images/kaka.png" class="user-component__avatar user-component__avatar"/>
+					<div class="user-component__text">
+						<h4 class="user-component__title"><%=room.room_name%></h4>
+					   <h6 class="user-component__subtitle"><%=room.room_members.length%>명 참가 중</h6>
+					</div>
+				</div>
+				<div class="user-component__column">
+					<span class="user-component__time">15:22</span>
+					<!-- <div class="badge">1</div> -->
+				</div>
+			</div>
+		<% }) %>
+		<!-- </a> -->
+    </main>
+
+    <nav class="nav">
+        <ul class="nav__list">
+            <li class="nav_btn" id="logout_button"><i class="far fa-user fa-2x"></i></li>
+           <li class="nav_btn"><a class="nav__link" href="chats.html"><span class="nav__notification badge">1</span><i class="fas fa-comment fa-2x"></i></a></li>
+           <li class="nav_btn"><a class="nav__link" href="find.html"><i class="fas fa-search fa-2x"></i></a></li>
+           <li class="nav_btn"><a class="nav__link" href="more.html"><span class="nav__notification2"></span><i class="fas fa-ellipsis-h fa-2x"></i></a></li>
+        </ul>
+    </nav>
+    
+    <!-- <div id="no-mobile"> -->
+        <!-- <span>Your screen is too big</span> -->
+    <!-- </div> -->
+
+<script src="https://kit.fontawesome.com/a9eb1f10be.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+

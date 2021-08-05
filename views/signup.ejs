@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Kokoa Talk</title>
+</head>
+<body>
+    
+    <div class="status-bar">
+        <div class="status-bar__column">
+            <Span>No Service</Span>
+            <i class="fas fa-wifi"></i>
+            <!--to do wifi Icon-->
+        </div>
+        <div class="status-bar__column">
+            <span>18:43</span>
+        </div>
+        <div class="status-bar__column">
+            <span>100%</span>
+            <i class="fas fa-battery-full fa-lg"></i>
+            <i class="fas fa-bolt"></i>
+            <!--battery icon-->
+            <!--lighting icon-->
+        </div>
+    </div>
+
+    <header class="welcome-header">
+        <h1 class="welcome-header__title" >Signup to KaKaoChat</h1>
+        <p class="welcome-header__text"> if you have a KaKao Account, log in with your email or phone number,</p>
+    </header>
+
+    <form method="post" id="login-form" enctype="multipart/form-data">
+        <input type="text" name="user_id" placeholder="Id"/>
+        <input type="password" name="user_pass" placeholder="Password"/>
+		<input type="file" name="img">
+        <input type="submit"  value="Sign up"/>
+        <a href="#">Find Kokoa Account or Password</a>
+    </form>
+   
+    <!-- <div id="no-mobile"> -->
+        <!-- <span>Your screen is too big</span> -->
+    <!-- </div> -->
+
+
+  
+    <script src="https://kit.fontawesome.com/a9eb1f10be.js" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+

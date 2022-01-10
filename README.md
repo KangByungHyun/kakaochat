@@ -2,7 +2,7 @@
 카카오톡 분위기의 실시간 채팅 서비스
 
 ## 📖 상세 내용
-Site : http://13.125.199.88/
+Site : http://13.125.199.88/ (서버 종료)
 
 PDF : https://github.com/KangByungHyun/kakaochat/blob/master/KaKaoChat.pdf
 
